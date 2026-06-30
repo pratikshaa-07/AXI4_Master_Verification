@@ -5,7 +5,7 @@ class agent extends uvm_agent;
 
   `uvm_component_utils(agent)
 
-  function new(string name="alu_agent",uvm_component parent);
+  function new(string name="agent",uvm_component parent);
     super.new(name,parent);
   endfunction
 
