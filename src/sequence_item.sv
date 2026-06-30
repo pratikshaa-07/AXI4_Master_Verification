@@ -47,5 +47,11 @@ class seq_item extends uvm_sequence_item;
   `uvm_field_int(empty,UVM_ALL_ON)
   
   `uvm_object_utils_end
+
+  //basic constraints 
+
+  constraint burst_size {
+    size inside {};
+  }
   
 endclass
