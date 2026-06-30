@@ -1,5 +1,5 @@
 `include "uvm_macros.svh"
-`include "interface.sv"
+`include "inf.sv"
 
 module top();
  import uvm_pkg::*;
@@ -14,10 +14,10 @@ module top();
     rst = 1;
 end
 
-  interface inf(clk,rst);
+  inf vif(clk,rst);
 
 initial begin
-  uvm_config_db#(virtual interface)::set(uvm_root::get(),"*","vif",vif);
+ uvm_config_db#(virtual inf)::set(uvm_root::get(),"*","vif",vif);
   
 end
 
