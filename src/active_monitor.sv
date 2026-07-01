@@ -1,5 +1,5 @@
-class monitor extends uvm_monitor;
-  `uvm_component_utils(monitor)
+class active_monitor extends uvm_monitor;
+  `uvm_component_utils(active_monitor)
   //virtual inf
   virtual inf.MON vif;
   //to 
