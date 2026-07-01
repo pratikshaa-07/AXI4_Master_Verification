@@ -2,7 +2,7 @@ class seq_item extends uvm_sequence_item;
   
   rand  bit [7:0]   sop;
   randc bit [3:0]   txn_id;
-  rand bit  [31:0]  waddr;
+  rand bit  [31:0]  addr;
   rand bit  [3:0]   len;
   rand bit  [2:0]   size;
   rand bit  [1:0]   burst;
@@ -12,6 +12,8 @@ class seq_item extends uvm_sequence_item;
   rand bit          strobe[];
   rand bit  [7:0]   eop;
   rand bit  [7:0]   data[];
+  bit       [127:0] resp_data;
+  rand bit mode;
   
   function new(string name="");
     super.new(name="");
@@ -29,8 +31,8 @@ class seq_item extends uvm_sequence_item;
   `uvm_field_int(prot,UVM_ALL_ON)
   `uvm_field_int(strobe,UVM_ALL_ON)
   `uvm_field_int(eop,UVM_ALL_ON)
-  `uvm_field_int(rdata,UVM_ALL_ON)
-  `uvm_field_int(
+  `uvm_field_int(data,UVM_ALL_ON)
+  `uvm_field_int(resp_data,UVM_ALL_ON)
   `uvm_object_utils_end
 
   //basic constraints 
@@ -46,8 +48,38 @@ class seq_item extends uvm_sequence_item;
   constraint eop_val {
     eop==8'b10101001;
   }
+  
+  constraint size_val {
+    size inside {[0:4]};
+  }
 
-  constraint 
+  constraint len_val {
+    len inside {[0:15]};
+  }
+
+  constraint data_size {
+    if(mode==0)
+      data.size()==((len+1)*(1<<size));
+    else
+      data.size()==1;
+  }
+
+  constraint strobe_size {
+    strobe.size()==data.size();
+  }
+
+  constraint rd_pkt_data {
+    data[0]==8'h00;
+  }
+
+  constraint wrt_pkt_data {
+    if(mode==0)
+      foreach(data[i])
+      {
+        data[i]!=sop;
+        data[i]!=eop;
+      }
+  }
   
   
 endclass
