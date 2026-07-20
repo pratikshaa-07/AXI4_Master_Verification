@@ -23,8 +23,7 @@ interface inf(input bit clk, input bit rst);
   // monitor clocking block
   clocking mon_cb@(posedge clk);
     default input #0 output #0;
-    input rd_data,empty,full;
-    output wr_en,wr_data,rd_en;
+    input rd_data,empty,full, wr_en,wr_data,rd_en;
   endclocking
 
   //modpoerts for driver and monitor
