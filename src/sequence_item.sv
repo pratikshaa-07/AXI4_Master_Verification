@@ -122,7 +122,7 @@ class seq_item extends uvm_sequence_item;
     `uvm_field_int(strobe, UVM_ALL_ON)
     `uvm_field_int(data,   UVM_ALL_ON)
     `uvm_field_int(eop,    UVM_ALL_ON)
-    `uvm_field_int(resp_data, UVM_ALL_ON | UVM_NOPACK)   // response-only, exclude from pack
+    `uvm_field_int(resp_data, UVM_ALL_ON)   // response-only, exclude from pack
   `uvm_object_utils_end
 
   // ---------------- constraints ----------------
