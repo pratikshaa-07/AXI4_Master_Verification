@@ -65,11 +65,18 @@ class seq_item extends uvm_sequence_item;
   }
 
   constraint strobe_size {
-    strobe.size()==data.size();
+    if(mode==0)
+      strobe.size()==data.size();
+    else
+    {
+      strobe.size()==1;
+      strobe[0]==0;
+    }
   }
 
   constraint rd_pkt_data {
-    data[0]==8'h00;
+    if(mode==1)
+      data[0]==8'h00;
   }
 
   constraint wrt_pkt_data {
