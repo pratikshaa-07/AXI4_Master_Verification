@@ -32,17 +32,17 @@ class driver extends uvm_driver #(seq_item);
     int idx;
 
     // build the exact bit stream for this packet, MSB-first per field
-    req.get_stream(stream);
+    stream = get_stream(req);
+    
     total_bits = stream.size();
     num_beats  = (total_bits + 127) / 128;
     idx        = 0;
 
-    `uvm_info("DRV", $sformatf("Driving packet: total_bits=%0d, num_beats=%0d",
-                                total_bits, num_beats), UVM_HIGH)
+    `uvm_info("DRV", $sformatf("Driving packet: total_bits=%0d, num_beats=%0d", total_bits, num_beats), UVM_HIGH)
 
     for (int b = 0; b < num_beats; b++) begin
       // wait until fifo has space
-      while (vif.drv_cb.full == 1'b1)
+      while (vif.full == 1'b1)
         @(vif.drv_cb);
 
       beat = '0;
@@ -62,17 +62,24 @@ class driver extends uvm_driver #(seq_item);
     vif.drv_cb.wr_en <= 1'b0;
   endtask
     
-function void get_stream(output bit stream[$]);
-  stream = {};
-  stream = {stream, {<<{sop}}};
-  stream = {stream, {<<{txn_id}}};
-  stream = {stream, {<<{addr}}};
-  stream = {stream, {<<{len}}};
-  stream = {stream, {<<{size}}};
-  stream = {stream, {<<{burst}}};
-  stream = {stream, {<<{lock}}};
-  stream = {stream, {<<{cache}}};
-  stream = {stream, {<<{prot}}};
+  function void get_stream[$](seq_item tx);
+    bit temp[$];
+    get_stream = {};
+    temp={};
+    temp = {>>{tx.sop}};
+    stream = {stream, temp};
+    temp={};
+    temp ={>>{tx.txn_id}};
+    stream = {strean,temp};
+    
+  stream = {stream, {>>{txn_id}}};
+  stream = {stream, {>>{addr}}};
+  stream = {stream, {>>{len}}};
+  stream = {stream, {>>{size}}};
+  stream = {stream, {>>{burst}}};
+  stream = {stream, {>>{lock}}};
+  stream = {stream, {>>{cache}}};
+  stream = {stream, {>>{prot}}};
   foreach (strobe[i])
     stream = {stream, strobe[i]};
   foreach (data[i])
