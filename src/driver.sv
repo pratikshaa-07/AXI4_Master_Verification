@@ -65,26 +65,46 @@ class driver extends uvm_driver #(seq_item);
   function void get_stream[$](seq_item tx);
     bit temp[$];
     get_stream = {};
-    temp={};
-    temp = {>>{tx.sop}};
-    stream = {stream, temp};
-    temp={};
-    temp ={>>{tx.txn_id}};
-    stream = {temp,stream};
-    stream = {stream, {>>{txn_id}}};
     
-    stream = {stream, {>>{addr}}};
-  stream = {stream, {>>{len}}};
-  stream = {stream, {>>{size}}};
-  stream = {stream, {>>{burst}}};
-  stream = {stream, {>>{lock}}};
-  stream = {stream, {>>{cache}}};
-  stream = {stream, {>>{prot}}};
-  foreach (strobe[i])
-    stream = {stream, strobe[i]};
-  foreach (data[i])
-    stream = {stream, {<<{data[i]}}};
-  stream = {stream, {<<{eop}}};
+    temp = {>>{tx.sop}};
+    stream = {stream,temp};
+    
+    temp ={>>{tx.txn_id}};
+    stream = {stream,temp};
+    
+    temp = {>>{tx.addr}};
+    stream = {stream,temp};
+
+    temp = {>>{tx.len}};
+    stream = {stream,temp};
+    
+    temp = {>>{tx.size}};
+    stream = {stream,temp};
+    
+    temp =  {>>{tx.burst}};
+    steam = {stream,temp};
+  
+    temp =  {>>{tx.lock}};
+    stream = {stream,temp};
+    
+    temp = {>>{tx.cache}};
+    stream = {stream,temp};
+    
+    temp = {>>{tx.prot}};
+    stream = {stream,temp};
+    
+    foreach (tx.strobe[i])
+     stream.push_back(tx.strobe[i]);
+    
+    foreach (tx.data[i])
+    begin
+      temp =  {<<{tx.data[i]};
+    stream = {stream,temp};         
+    end
+
+  temp = {>>{tx.eop}};         
+  stream = {stream, temp};
 endfunction
     
 endclass
+
