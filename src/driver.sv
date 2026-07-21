@@ -72,7 +72,8 @@ class driver extends uvm_driver #(seq_item);
     temp ={>>{tx.txn_id}};
     stream = {temp,stream};
     stream = {stream, {>>{txn_id}}};
-  stream = {stream, {>>{addr}}};
+    
+    stream = {stream, {>>{addr}}};
   stream = {stream, {>>{len}}};
   stream = {stream, {>>{size}}};
   stream = {stream, {>>{burst}}};
