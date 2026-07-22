@@ -28,11 +28,6 @@ class driver extends uvm_driver #(seq_item);
   endtask
 
   task drive();
-    int total_bits;
-    int num_beats;
-    bit [127:0] beat;
-    int idx;
-
     vif.drv_cb.wr_en<=req.wr_en;
     vif.drv_cb.rd_en<=req.rd_en;
 
