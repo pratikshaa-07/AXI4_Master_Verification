@@ -1,6 +1,9 @@
 class driver extends uvm_driver #(seq_item);
   `uvm_component_utils(driver)
 
+  //
+    bit stream[$];
+
   virtual inf.DRV vif;
 
   function new(string name="", uvm_component parent);
@@ -25,7 +28,6 @@ class driver extends uvm_driver #(seq_item);
   endtask
 
   task drive();
-    bit stream[$];
     int total_bits;
     int num_beats;
     bit [127:0] beat;
@@ -33,8 +35,9 @@ class driver extends uvm_driver #(seq_item);
 
     vif.drv_cb.wr_en<=req.wr_en;
     vif.drv_cb.rd_en<=req.rd_en;
-    
-    if(req.wr_en)
+
+    fork
+      if(req.wr_en)
       begin
         //making a stream
         get_stream(req);
@@ -42,11 +45,13 @@ class driver extends uvm_driver #(seq_item);
         @(vif.drv_cb);
       end
 
-    if(req.rd_en)
+     if(req.rd_en)
       begin
-        read_task();
+        `uvm_info("DRV","rd_en is high",UVM_LOW)
         @(vif.drv_cb);
       end
+      
+    join
 
     if(req.rd_en == 0 && req.wr_en == 0)
       begin
@@ -90,12 +95,32 @@ class driver extends uvm_driver #(seq_item);
     stream = {stream,temp};
   endfunction
 
-    task write_task();
-      
-    endtask
-//{SOP (8 bits) + TXN_ID (4 bits) + ADDR (32 bits) + LEN (4 bits) + SIZE (3 bits) + BURST (2 bits) + LOCK (2 bits) + CACHE (2 bits) + PROT (3 bits) + STROBE (4 bits) + DATA (8 bits) + EOP (8 bits)}
-    task read_task();
-      vif.drv_cb.rd_data<={req.sop,req.tx_id,req.addr,req.len,req.size,req.size,req.burst,req.lock,req.cache,req.prot,req.strobe,req.data,req.eop};
-    endtask
+  task write_task();
+    int total_bits;
+    int num_beats;
+    bit [127:0] beat;
+    int idx;
+    
+    total_bits = stream.size();
+    num_beats  = (total_bits + 127) / 128;
+    idx = 0;
+
+  for (int b = 0; b < num_beats; b++) 
+    begin
+    // while (vif.drv_cb.full == 1'b1)
+    //   @(vif.drv_cb);
+      beat = '0;
+      for (int k = 127; k >= 0; k--) 
+        begin
+          if (idx < total_bits)
+            beat[k] = stream[idx];
+          idx++;
+        end
+    vif.drv_cb.wr_data <= beat;
+    @(vif.drv_cb);
+  end
+
+endtask
+
 
 endclass
